@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}How it works{% endblock %}
+{% block content %}
+<h1>How BookWise recommends books</h1>
+<div class="card prose">
+  <p>BookWise uses a <strong>hybrid recommender</strong>. Three simple ideas are combined into one score for every book you haven't read:</p>
+  <ol>
+    <li><strong>Content-based (45%)</strong> – every book is turned into a numeric "fingerprint" (TF-IDF of its genres, author, title and description). We build a taste profile from the books you liked and the genres you chose, then find books with similar fingerprints (cosine similarity).</li>
+    <li><strong>Collaborative (40%)</strong> – "readers who liked this also liked that". Books that were rated similarly by the same people are considered similar (item-based collaborative filtering).</li>
+    <li><strong>Popularity (15%)</strong> – a fair, weighted average rating that helps when we don't know you yet.</li>
+  </ol>
+  <p>The weights adapt: with few ratings we lean on your chosen genres and popularity; as you rate more books, collaborative filtering gets a bigger say.</p>
+  <h3>What counts as feedback?</h3>
+  <ul><li>⭐ Ratings (5★ = loved it, 1★ = disliked – low ratings push similar books down)</li>
+      <li>♥ Favourites (treated as strong positive signals)</li>
+      <li>👀 Books you view (a weak positive signal)</li></ul>
+  <p>Every recommendation comes with a short <em>reason</em> so you can see what drove it.</p>
+</div>
+{% endblock %}

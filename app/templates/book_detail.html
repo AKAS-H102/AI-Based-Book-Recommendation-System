@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "_macros.html" import book_card, stars, cover with context %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<section class="detail">
+  <div class="detail-cover">{{ cover(book) }}</div>
+  <div class="detail-info">
+    <h1>{{ book.title }}</h1>
+    <p class="muted">by <a href="{{ url_for('main.books', author=book.author) }}">{{ book.author }}</a>{% if book.year %} · First published {{ book.year }}{% endif %}</p>
+    <p class="rating-line big">{{ stars(book.avg_rating) }} <strong id="avg-rating">{{ '%.1f' % book.avg_rating }}</strong>
+       <span class="muted">(<span id="rating-count">{{ book.ratings_count }}</span> ratings)</span></p>
+    <p class="chips">{% for gname in book.genre_list %}<a class="chip" href="{{ url_for('main.books', genre=gname) }}">{{ gname }}</a>{% endfor %}</p>
+    <p class="description">{{ book.description }}</p>
+
+    <div class="card action-box">
+      {% if g.user %}
+        <div>
+          <strong>Your rating</strong>
+          <div class="star-input" id="star-input" data-book="{{ book.id }}" data-value="{{ book.my_rating or 0 }}" role="radiogroup" aria-label="Rate this book">
+            {% for i in range(1, 6) %}<button type="button" class="star" data-value="{{ i }}" aria-label="{{ i }} star{{ 's' if i > 1 }}">★</button>{% endfor %}
+          </div>
+          <button type="button" class="link-btn" id="clear-rating" {{ 'hidden' if not book.my_rating }}>Clear rating</button>
+        </div>
+        <button class="btn {{ 'btn-primary' if book.is_fav else 'btn-ghost' }} fav-btn-large" data-book="{{ book.id }}" id="fav-large">
+          {{ '♥ In your favourites' if book.is_fav else '♡ Add to favourites' }}</button>
+      {% else %}
+        <p><a href="{{ url_for('auth.login', next=request.path) }}">Log in</a> to rate this book, save it to your favourites and get personalised recommendations.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <strong>Rating distribution</strong>
+      {% set total = dist | sum %}
+      {% for n in dist %}
+        <div class="bar-row"><span>{{ 5 - loop.index0 }}★</span>
+          <div class="bar"><div style="width: {{ (100 * n / total) if total else 0 }}%"></div></div><span class="muted">{{ n }}</span></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><h2>Readers also enjoy</h2></div>
+  <div class="grid">{% for b in similar %}{{ book_card(b, explain=True) }}{% endfor %}</div>
+</section>
+{% endblock %}

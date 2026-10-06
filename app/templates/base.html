@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}BookWise{% endblock %} · BookWise</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-auth="{{ 1 if g.user else 0 }}">
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="{{ url_for('main.home') }}"><span class="logo">📚</span> BookWise</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <nav class="nav-links" id="nav-links">
+      <a href="{{ url_for('main.books') }}" class="{{ 'active' if request.endpoint == 'main.books' }}">Browse</a>
+      <a href="{{ url_for('main.recommendations') }}" class="{{ 'active' if request.endpoint == 'main.recommendations' }}">For You</a>
+      <a href="{{ url_for('main.about') }}">How it works</a>
+      <form class="nav-search" action="{{ url_for('main.books') }}" method="get" role="search">
+        <input type="search" name="q" placeholder="Search title, author…" aria-label="Search books" value="{{ request.args.get('q', '') }}">
+      </form>
+      {% if g.user %}
+        <a href="{{ url_for('main.favorites') }}">♥ Favorites</a>
+        <a href="{{ url_for('main.history') }}">History</a>
+        <a href="{{ url_for('main.profile') }}" class="pill">{{ g.user['username'] }}</a>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-ghost btn-sm">Logout</button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign up</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" role="alert">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer"><div class="container">BookWise · AI-Based Book Recommendation System · College project</div></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

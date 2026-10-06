@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import book_card with context %}
+{% block title %}Recommended for you{% endblock %}
+{% block content %}
+<h1>Recommended for you</h1>
+<div class="card info-box">
+  <p>
+    {% if n_rated + n_fav == 0 %}
+      You haven't rated any books yet, so these picks are based on your <a href="{{ url_for('main.profile') }}">chosen genres</a> and what's popular.
+      <strong>Rate or favourite a few books and they will become much more personal.</strong>
+    {% else %}
+      Based on your <strong>{{ n_rated }}</strong> rating{{ '' if n_rated == 1 else 's' }}, <strong>{{ n_fav }}</strong> favourite{{ '' if n_fav == 1 else 's' }}
+      and your profile interests. Each card says why the book was picked.
+    {% endif %}
+    <a href="{{ url_for('main.about') }}">How does this work?</a>
+  </p>
+  <form method="get" class="inline-filter"><label>Filter by genre
+    <select name="genre" onchange="this.form.submit()"><option value="">All</option>
+      {% for gname in genres %}<option value="{{ gname }}" {{ 'selected' if genre == gname }}>{{ gname }}</option>{% endfor %}
+    </select></label></form>
+</div>
+{% if recs %}
+  <div class="grid">{% for b in recs %}{{ book_card(b, explain=True) }}{% endfor %}</div>
+{% else %}
+  <div class="empty card"><h3>No recommendations in this genre</h3><p>Try "All" or rate more books.</p></div>
+{% endif %}
+{% endblock %}

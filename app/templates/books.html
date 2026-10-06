@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import book_card, pagination with context %}
+{% block title %}Browse books{% endblock %}
+{% block content %}
+<h1>Browse books</h1>
+<form class="filters card" method="get" action="{{ url_for('main.books') }}">
+  <label>Search<input type="search" name="q" value="{{ f.q }}" placeholder="Title, author, keyword"></label>
+  <label>Genre
+    <select name="genre"><option value="">All genres</option>
+      {% for gname in genres %}<option value="{{ gname }}" {{ 'selected' if f.genre == gname }}>{{ gname }}</option>{% endfor %}
+    </select></label>
+  <label>Author<input type="text" name="author" value="{{ f.author }}" placeholder="e.g. Tolkien"></label>
+  <label>Min rating
+    <select name="min_rating">
+      {% for v in [0, 3, 3.5, 4, 4.5] %}<option value="{{ v }}" {{ 'selected' if f.min_rating == v }}>{{ 'Any' if v == 0 else v ~ '★ & up' }}</option>{% endfor %}
+    </select></label>
+  <label>Sort by
+    <select name="sort">
+      {% for k, label in [('popular','Most rated'),('rating','Highest rated'),('newest','Newest'),('oldest','Oldest'),('title','Title A-Z')] %}
+      <option value="{{ k }}" {{ 'selected' if f.sort == k }}>{{ label }}</option>{% endfor %}
+    </select></label>
+  <div class="filter-actions"><button class="btn btn-primary">Apply</button><a class="btn btn-ghost" href="{{ url_for('main.books') }}">Reset</a></div>
+</form>
+<p class="muted">{{ total }} book{{ '' if total == 1 else 's' }} found</p>
+{% if books %}
+  <div class="grid">{% for b in books %}{{ book_card(b) }}{% endfor %}</div>
+  {{ pagination(page, pages, 'main.books') }}
+{% else %}
+  <div class="empty card"><h3>No books match your filters</h3><p>Try a different keyword or reset the filters.</p></div>
+{% endif %}
+{% endblock %}

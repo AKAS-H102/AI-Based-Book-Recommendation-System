@@ -1,0 +1,38 @@
+{% macro stars(value) -%}
+  <span class="stars" title="{{ value }} / 5">{% for i in range(1, 6) %}<span class="{{ 'on' if value >= i - 0.25 else ('half' if value >= i - 0.75 else '') }}">★</span>{% endfor %}</span>
+{%- endmacro %}
+
+{% macro cover(b) -%}
+  <div class="cover" style="--h: {{ (b.id * 47) % 360 }}">
+    <span class="cover-initial">{{ b.title[:1] }}</span><small>{{ b.title }}</small>
+    {% if b.cover_url %}<img src="{{ b.cover_url }}" alt="Cover of {{ b.title }}" loading="lazy" onerror="this.remove()">{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro book_card(b, explain=False) -%}
+<article class="card book-card">
+  <a class="cover-link" href="{{ url_for('main.book_detail', book_id=b.id) }}" aria-label="{{ b.title }}">{{ cover(b) }}</a>
+  <button class="fav-btn {{ 'active' if b.is_fav }}" data-book="{{ b.id }}" aria-label="Toggle favourite" title="Favourite">♥</button>
+  {% if explain and b.match_pct is defined %}<span class="match">{{ b.match_pct }}% match</span>{% endif %}
+  <div class="card-body">
+    <h3><a href="{{ url_for('main.book_detail', book_id=b.id) }}">{{ b.title }}</a></h3>
+    <p class="muted">{{ b.author }}{% if b.year %} · {{ b.year }}{% endif %}</p>
+    <p class="rating-line">{{ stars(b.avg_rating) }} <span class="muted">{{ '%.1f' % b.avg_rating }} ({{ b.ratings_count }})</span></p>
+    <p class="chips">{% for g in b.genre_list[:3] %}<a class="chip" href="{{ url_for('main.books', genre=g) }}">{{ g }}</a>{% endfor %}</p>
+    {% if explain and b.reasons %}
+      <ul class="reasons">{% for r in b.reasons %}<li>💡 {{ r }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+</article>
+{%- endmacro %}
+
+{% macro pagination(page, pages, endpoint) -%}
+{% if pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+  {% set args = request.args.to_dict() %}{% set _ = args.pop('page', None) %}
+  {% if page > 1 %}<a class="btn btn-ghost btn-sm" href="{{ url_for(endpoint, page=page-1, **args) }}">← Prev</a>{% endif %}
+  <span class="muted">Page {{ page }} of {{ pages }}</span>
+  {% if page < pages %}<a class="btn btn-ghost btn-sm" href="{{ url_for(endpoint, page=page+1, **args) }}">Next →</a>{% endif %}
+</nav>
+{% endif %}
+{%- endmacro %}

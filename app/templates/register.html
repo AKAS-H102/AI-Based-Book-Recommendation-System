@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<section class="auth card wide">
+  <h1>Create your account</h1>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Username<input type="text" name="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_]+" value="{{ form.get('username', '') }}" autocomplete="username"></label>
+    <label>Email<input type="email" name="email" required maxlength="120" value="{{ form.get('email', '') }}" autocomplete="email"></label>
+    <label>Password<input type="password" name="password" required minlength="8" autocomplete="new-password"><small class="muted">At least 8 characters with a letter and a number.</small></label>
+    <label>Confirm password<input type="password" name="confirm" required autocomplete="new-password"></label>
+    <fieldset><legend>Pick a few genres you enjoy (optional — helps first recommendations)</legend>
+      <div class="checks">{% for gname in genres %}
+        <label class="check"><input type="checkbox" name="genres" value="{{ gname }}" {{ 'checked' if gname in form.getlist('genres') }}> {{ gname }}</label>{% endfor %}
+      </div></fieldset>
+    <button class="btn btn-primary btn-block">Sign up</button>
+  </form>
+  <p class="muted">Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+</section>
+{% endblock %}

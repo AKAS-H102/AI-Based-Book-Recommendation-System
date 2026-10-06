@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import book_card with context %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Find your next favourite book.</h1>
+    <p class="lead">BookWise learns from your ratings, favourites and interests to recommend books you'll love — and tells you <em>why</em>.</p>
+    <form class="hero-search" action="{{ url_for('main.books') }}" method="get">
+      <input type="search" name="q" placeholder="Search by title, author or topic…" aria-label="Search books">
+      <button class="btn btn-primary">Search</button>
+    </form>
+    <div class="stats">
+      <div><strong>{{ stats.books }}</strong><span>books</span></div>
+      <div><strong>{{ stats.ratings }}</strong><span>ratings</span></div>
+      <div><strong>{{ stats.readers }}</strong><span>readers</span></div>
+    </div>
+  </div>
+</section>
+
+{% if g.user %}
+<section>
+  <div class="section-head"><h2>Recommended for you</h2><a href="{{ url_for('main.recommendations') }}">See all →</a></div>
+  <div class="grid">{% for b in recs %}{{ book_card(b, explain=True) }}{% endfor %}</div>
+</section>
+{% else %}
+<section class="cta card">
+  <h2>Get personal recommendations</h2>
+  <p>Create a free account, pick your favourite genres and rate a few books — the recommender does the rest.</p>
+  <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Create account</a>
+  <a class="btn btn-ghost" href="{{ url_for('auth.login') }}">I already have one</a>
+</section>
+{% endif %}
+
+<section>
+  <div class="section-head"><h2>Browse by genre</h2></div>
+  <p class="chips big">{% for gname in genres %}<a class="chip" href="{{ url_for('main.books', genre=gname) }}">{{ gname }}</a>{% endfor %}</p>
+</section>
+
+<section>
+  <div class="section-head"><h2>Top rated by the community</h2><a href="{{ url_for('main.books', sort='rating') }}">Browse all →</a></div>
+  <div class="grid">{% for b in top %}{{ book_card(b) }}{% endfor %}</div>
+</section>
+{% endblock %}

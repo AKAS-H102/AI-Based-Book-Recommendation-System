@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% from "_macros.html" import book_card with context %}
+{% block title %}My favourites{% endblock %}
+{% block content %}
+<h1>My favourites</h1>
+{% if books %}
+  <div class="grid">{% for b in books %}{{ book_card(b) }}{% endfor %}</div>
+{% else %}
+  <div class="empty card"><h3>No favourites yet</h3><p>Tap the ♥ on any book to save it here.</p>
+  <a class="btn btn-primary" href="{{ url_for('main.books') }}">Browse books</a></div>
+{% endif %}
+{% endblock %}

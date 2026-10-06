@@ -1,0 +1,6 @@
+Model,Precision@10,Recall@10,NDCG@10,HitRate@10,Coverage
+Random,0.026,0.112,0.059,0.23,1.0
+Popularity only,0.046,0.211,0.118,0.377,0.192
+Content-based only,0.037,0.165,0.101,0.323,1.0
+Collaborative only,0.048,0.221,0.131,0.387,1.0
+Hybrid (proposed),0.048,0.215,0.127,0.383,1.0

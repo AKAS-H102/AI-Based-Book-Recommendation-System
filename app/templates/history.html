@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stars with context %}
+{% block title %}My ratings & history{% endblock %}
+{% block content %}
+<h1>My ratings &amp; history</h1>
+<div class="two-col">
+  <section class="card">
+    <h2>My ratings ({{ rated | length }})</h2>
+    {% if rated %}
+    <table class="table">
+      <thead><tr><th>Book</th><th>My rating</th><th>Date</th></tr></thead>
+      <tbody>{% for b in rated %}
+        <tr><td><a href="{{ url_for('main.book_detail', book_id=b.id) }}">{{ b.title }}</a><br><span class="muted">{{ b.author }}</span></td>
+            <td>{{ stars(b.my_rating_value) }}</td><td class="muted">{{ b.updated_at[:10] }}</td></tr>{% endfor %}
+      </tbody></table>
+    {% else %}<p class="muted">You haven't rated any books yet.</p>{% endif %}
+  </section>
+  <section class="card">
+    <h2>Recent activity</h2>
+    {% if timeline %}
+    <ul class="timeline">{% for t in timeline %}
+      <li><span class="muted">{{ t.created_at[:16] }}</span> {{ t.action | pretty_action }}
+        <a href="{{ url_for('main.book_detail', book_id=t.book_id) }}">{{ t.title }}</a>{% if t.value %} ({{ t.value | int }}★){% endif %}</li>{% endfor %}
+    </ul>
+    {% else %}<p class="muted">No activity yet — open a book to get started.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}
